@@ -29,7 +29,13 @@ $ docker build -t jenkins-chrome .
 # Debes agregar el usuario a grupo de docker con el siguiente comando: sudo usermod -aG docker {user}
 # Generalmente se agrega el usuario root como en el ejemplo, pero puedes utilizar otro usuario.
 
-$ docker run -u root -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -d --restart unless-stopped jenkins-chrome:latest
+$ docker run --name jenkins-docker --rm --detach ^
+  --privileged --network jenkins --network-alias docker ^
+  --env DOCKER_TLS_CERTDIR=/certs ^
+  --volume jenkins-docker-certs:/certs/client ^
+  --volume jenkins-data:/var/jenkins_home ^
+  --publish 2376:2376 ^
+  docker:dind
 ```
 
 Al ejecutar este comando estarás dentro del contenedor y en la consola nos interesará una cosa de toda la salida que se presentó:
